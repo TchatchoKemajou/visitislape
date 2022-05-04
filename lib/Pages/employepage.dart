@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:horizontal_data_table/horizontal_data_table.dart';
 import 'package:provider/provider.dart';
-import 'package:visitislape/Providers/employeeprovider.dart';
+import 'package:visitislape/Providers/personprovider.dart';
 import '../constantes.dart';
 
 class EmployedPage extends StatefulWidget {
@@ -28,8 +28,8 @@ class _EmployedPageState extends State<EmployedPage> {
   List<dynamic> employeeListSearch = [];
 
   getAllEmployees() async{
-    final employeeprovider = Provider.of<EmployeeProvider>(context);
-    final e = await employeeprovider.findAllEmployees();
+    final personProvider = Provider.of<PersonProvider>(context);
+    final e = await personProvider.findAllEmployees();
     setState(() {
       employeeList = e;
     });
@@ -94,7 +94,7 @@ class _EmployedPageState extends State<EmployedPage> {
                     const SizedBox(width: 5,),
                     ElevatedButton(
                       onPressed: () {
-                        //getAllVisitor();
+                        getAllEmployees();
                       },
                       child: Row(
                         children: const [
@@ -164,9 +164,10 @@ class _EmployedPageState extends State<EmployedPage> {
 
   List<Widget> _getTitleWidget() {
     return [
-      _getTitleItemWidget('Code', MediaQuery.of(context).size.width * 0.15),
+      _getTitleItemWidget('Matricule', MediaQuery.of(context).size.width * 0.15),
       _getTitleItemWidget("Nom", MediaQuery.of(context).size.width * 0.15),
-      _getTitleItemWidget("Matricule", MediaQuery.of(context).size.width * 0.15),
+      _getTitleItemWidget("Prénom", MediaQuery.of(context).size.width * 0.15),
+      _getTitleItemWidget("Activité", MediaQuery.of(context).size.width * 0.15),
       _getTitleItemWidget('Actions', MediaQuery.of(context).size.width * 0.05),
     ];
   }
@@ -183,7 +184,7 @@ class _EmployedPageState extends State<EmployedPage> {
     final employee = isSearch == true ? employeeListSearch[index] : employeeList[index];
     return Container(
       child: Text(
-        employee['empID'] != null ? employee['empID'].toString() : "",
+        employee['matricule'] ?? "",
         style: const TextStyle(
           fontFamily: 'PopBold',
           color: thirdcolor,
@@ -201,7 +202,7 @@ class _EmployedPageState extends State<EmployedPage> {
       children: <Widget>[
         Container(
           child: Text(
-            employee['empFullName'] ?? "",
+            employee['firstName'] ?? "",
             style: const TextStyle(
               fontFamily: 'PopRegular',
               color: color2,
@@ -214,7 +215,20 @@ class _EmployedPageState extends State<EmployedPage> {
         ),
         Container(
           child: Text(
-            employee['empMatricule'] ?? "Aucun",
+            employee['lastName'] ?? "Aucun",
+            style: const TextStyle(
+              fontFamily: 'PopRegular',
+              color: color2,
+            ),
+          ),
+          width: MediaQuery.of(context).size.width * 0.15,
+          height: 52,
+          padding: const EdgeInsets.fromLTRB(5, 0, 0, 0),
+          alignment: Alignment.centerLeft,
+        ),
+        Container(
+          child: Text(
+            employee['domaine'] ?? "Aucun",
             style: const TextStyle(
               fontFamily: 'PopRegular',
               color: color2,
@@ -228,10 +242,10 @@ class _EmployedPageState extends State<EmployedPage> {
         Container(
           child: ElevatedButton(
             onPressed: () async{
-              final employeeprovider = Provider.of<EmployeeProvider>(context, listen: false);
-              employeeprovider.changeEmpId = employee['empID'];
-              await employeeprovider.updateEmployeeCard();
-              if(employeeprovider.requestMessage == "success"){
+              final personProvider = Provider.of<PersonProvider>(context, listen: false);
+              personProvider.changePersonId = employee['personId'];
+              await personProvider.updateCard();
+              if(personProvider.requestMessage == "success"){
                 ElegantNotification.success(
                   description: const Text("opération effectuée avec success"),
                   title: const Text("Success"),
@@ -248,14 +262,14 @@ class _EmployedPageState extends State<EmployedPage> {
               }
             },
             child: Text(
-              employee['etatCarte'] == true ? "Activer" : "Désactiver",
+              employee['statusCard'] == true ? "Activer" : "Désactiver",
               style: const TextStyle(
                 fontFamily: 'PopBold',
                 color: Colors.white,
               ),
             ),
             style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.resolveWith((states) => employee['etatCarte'] == true ? secondcolor : thirdcolor),
+                backgroundColor: MaterialStateProperty.resolveWith((states) => employee['statusCard'] == true ? secondcolor : thirdcolor),
                 padding: MaterialStateProperty.all(const EdgeInsets.only(left: 10, right: 10, top: 5, bottom: 5)),
                 shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                     RoundedRectangleBorder(
@@ -284,7 +298,7 @@ class _EmployedPageState extends State<EmployedPage> {
     });
     setState(() {
       employeeListSearch = employeeList.where((element) {
-        return element['visitorFullName'].toLowerCase().contains(query.toLowerCase()) || element['vistorLastName'].toLowerCase().contains(query.toLowerCase()) || element['visitorCardId'].toLowerCase().contains(query.toLowerCase());
+        return element['matricule'].toLowerCase().contains(query.toLowerCase()) || element['firstName'].toLowerCase().contains(query.toLowerCase()) || element['lastName'].toLowerCase().contains(query.toLowerCase()) || element['domaine'].toLowerCase().contains(query.toLowerCase());
       }).toList();
     });
   }
@@ -297,9 +311,9 @@ class _EmployedPageState extends State<EmployedPage> {
     );
   }
   addNewEmployeeWidget(){
-    final employeeprovider = Provider.of<EmployeeProvider>(context, listen: false);
+    final personProvider = Provider.of<PersonProvider>(context, listen: false);
     return Container(
-      height: MediaQuery.of(context).size.height * 0.5,
+      height: MediaQuery.of(context).size.height * 0.6,
       width: MediaQuery.of(context).size.width * 0.2,
       decoration: BoxDecoration(
         color: Colors.white,
@@ -314,7 +328,7 @@ class _EmployedPageState extends State<EmployedPage> {
             height: 50,
             child: const Center(
               child: Text(
-                "Ajouter un visiteur",
+                "Ajouter un employée",
                 style: TextStyle(
                     color: Colors.white,
                     fontFamily: 'PopBold',
@@ -334,7 +348,7 @@ class _EmployedPageState extends State<EmployedPage> {
                     keyboardType: TextInputType.text,
                     validator: (e) => e!.isEmpty ? " ce champ est obligatoire":null,
                     onChanged: (e){
-                      employeeprovider.changeEmpMatricule = e;
+                      personProvider.changeMatricule = e;
                     },
                     //controller: nameController,
                     maxLines: 1,
@@ -377,7 +391,7 @@ class _EmployedPageState extends State<EmployedPage> {
                   TextFormField(
                     keyboardType: TextInputType.text,
                     onChanged: (e){
-                      employeeprovider.changeEmpCode = e;
+                      personProvider.changeCode = e;
                     },
                     validator: (e) => e!.isEmpty ? " ce champ est obligatoire":null,
                     //controller: prenomController,
@@ -422,7 +436,7 @@ class _EmployedPageState extends State<EmployedPage> {
                     keyboardType: TextInputType.text,
                     validator: (e) => e!.isEmpty ? " ce champ est obligatoire":null,
                     onChanged: (e){
-                      employeeprovider.changeEmpFullName = e;
+                      personProvider.changeFirstName = e;
                     },
                     //controller: cardController,
                     maxLines: 1,
@@ -462,11 +476,100 @@ class _EmployedPageState extends State<EmployedPage> {
                     ),
                   ),
                   const SizedBox(height: 10,),
+                  TextFormField(
+                    keyboardType: TextInputType.text,
+                   // validator: (e) => e!.isEmpty ? " ce champ est obligatoire":null,
+                    onChanged: (e){
+                      personProvider.changeLastName = e;
+                    },
+                    //controller: cardController,
+                    maxLines: 1,
+                    style: const TextStyle(
+                        color: secondcolor
+                    ),
+                    decoration: const InputDecoration(
+                      hoverColor: Colors.white,
+                      hintText: "Prénom",
+                      hintStyle: TextStyle(
+                          color: secondcolor,
+                          fontFamily: 'PopRegular',
+                          fontSize: 12
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(5)),
+                          borderSide: BorderSide(
+                              color: secondcolor
+                          )
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(5)),
+                          borderSide: BorderSide(
+                              color: color2
+                          )
+                      ),
+                      isDense: true,                      // Added this
+                      contentPadding: EdgeInsets.all(10),
+                      //hintText: "login",
+                      prefixIcon: Icon(Icons.person, color: color4,),
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(5)),
+                          borderSide: BorderSide(
+                              color: color2
+                          )
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10,),
+                  TextFormField(
+                    keyboardType: TextInputType.text,
+                    validator: (e) => e!.isEmpty ? " ce champ est obligatoire":null,
+                    onChanged: (e){
+                      personProvider.changeDomaine = e;
+                    },
+                    //controller: cardController,
+                    maxLines: 1,
+                    style: const TextStyle(
+                        color: secondcolor
+                    ),
+                    decoration: const InputDecoration(
+                      hoverColor: Colors.white,
+                      hintText: "Domaine d'activité",
+                      hintStyle: TextStyle(
+                          color: secondcolor,
+                          fontFamily: 'PopRegular',
+                          fontSize: 12
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(5)),
+                          borderSide: BorderSide(
+                              color: secondcolor
+                          )
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(5)),
+                          borderSide: BorderSide(
+                              color: color2
+                          )
+                      ),
+                      isDense: true,                      // Added this
+                      contentPadding: EdgeInsets.all(10),
+                      //hintText: "login",
+                      prefixIcon: Icon(Icons.person, color: color4,),
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(5)),
+                          borderSide: BorderSide(
+                              color: color2
+                          )
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10,),
                   ElevatedButton(
                     onPressed: () async{
                       if(key.currentState!.validate()){
-                        await employeeprovider.saveEmployee();
-                        if(employeeprovider.requestMessage == "success"){
+                        personProvider.changePersonType = "employee";
+                        await personProvider.savePerson();
+                        if(personProvider.requestMessage == "success"){
                           SmartDialog.dismiss();
                           ElegantNotification.success(
                             description: const Text("Employée enregistré avec succès"),

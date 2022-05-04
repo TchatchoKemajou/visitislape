@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:easy_sidemenu/easy_sidemenu.dart';
 import 'package:flutter/material.dart';
+import 'package:visitislape/API/securityapi.dart';
+import 'package:visitislape/Pages/Auth/register.dart';
 import 'package:visitislape/Pages/dashboardpage.dart';
 import 'package:visitislape/Pages/employepage.dart';
 import 'package:visitislape/Pages/historiquepage.dart';
@@ -19,6 +21,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  SecurityApi securityApi = SecurityApi();
   String heure = (DateTime.now().hour.toString().length == 1 ? "0" + DateTime.now().hour.toString() : DateTime.now().hour.toString()) + " : " + (DateTime.now().minute.toString().length == 1 ? "0" + DateTime.now().minute.toString() : DateTime.now().minute.toString());
   PageController page = PageController();
 
@@ -159,10 +162,10 @@ class _HomePageState extends State<HomePage> {
                   page.jumpToPage(3);
                 },
                 icon: const Icon(Icons.home),
-                badgeContent: const Text(
-                  '3',
-                  style: TextStyle(color: Colors.white),
-                ),
+                // badgeContent: const Text(
+                //   '3',
+                //   style: TextStyle(color: Colors.white),
+                // ),
               ),
               SideMenuItem(
                 priority: 4,
@@ -175,7 +178,11 @@ class _HomePageState extends State<HomePage> {
               SideMenuItem(
                 priority: 6,
                 title: 'Deconnexion',
-                onTap: () async {},
+                onTap: () async {
+                  await securityApi.deleteToken();
+                  Navigator.pop(context);
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => const RegisterPage()));
+                },
                 icon: const Icon(Icons.exit_to_app),
               ),
             ],

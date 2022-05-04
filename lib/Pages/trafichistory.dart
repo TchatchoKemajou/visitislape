@@ -1,20 +1,21 @@
+import 'package:date_time_picker/date_time_picker.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:horizontal_data_table/horizontal_data_table.dart';
 import 'package:provider/provider.dart';
-import 'package:visitislape/API/securityapi.dart';
-import 'package:visitislape/Providers/traficprovider.dart';
 
+import '../API/securityapi.dart';
+import '../Providers/traficprovider.dart';
 import '../constantes.dart';
 
-class TraficPage extends StatefulWidget {
-  const TraficPage({Key? key}) : super(key: key);
+class TraficHistory extends StatefulWidget {
+  const TraficHistory({Key? key}) : super(key: key);
 
   @override
-  State<TraficPage> createState() => _TraficPageState();
+  State<TraficHistory> createState() => _TraficHistoryState();
 }
 
-class _TraficPageState extends State<TraficPage> {
+class _TraficHistoryState extends State<TraficHistory> {
   SecurityApi securityApi = SecurityApi();
   final searchController = TextEditingController();
   List<dynamic> traficOfDays = [];
@@ -29,133 +30,116 @@ class _TraficPageState extends State<TraficPage> {
     'Sortie',
   ];
 
-  getListTraficOfDay() async{
+  getListTrafic() async{
     final site = await securityApi.getSite();
     final traficProvider = Provider.of<TraficProvider>(context, listen: false);
-    final t = await traficProvider.findAllTraficByDay(site);
+    final t = await traficProvider.findAllTrafic(site);
     setState(() {
       traficOfDays = t;
     });
   }
-
   @override
   Widget build(BuildContext context) {
-    getListTraficOfDay();
+    getListTrafic();
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 15, right: 15, top: 20),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    "Trafic de la journée",
-                    style: TextStyle(
-                        fontFamily: 'PopBold',
-                        color: Colors.black,
-                        fontSize: 20
-                    ),
-                  ),
-                  Row(
-                    children: [
-                      ElevatedButton(
-                        onPressed: () async{
-                          // //if (!await launch("http://localhost:8080/api/v1/visite/downloadpdf")) throw 'Could not launch fgggf';
-                          // Map<String, dynamic> m = {
-                          //   'number': DateTime.now().day.toString() + DateTime.now().second.toString() + DateTime.now().hour.toString() + "9999",
-                          //   'date': (DateTime.now().day.toString().length == 1 ? "0" + DateTime.now().day.toString() : DateTime.now().day.toString()) + "/" + (DateTime.now().month.toString().length == 1 ? "0" + DateTime.now().month.toString() : DateTime.now().month.toString()) + "/" + DateTime.now().year.toString(),
-                          // };
-                          // String name = "fiche" + DateTime.now().day.toString() + DateTime.now().second.toString() + DateTime.now().hour.toString() + "9999";
-                          // final info = m;
-                          // final invoice = visitOfDays;
-                          // String pdfFile = await PdfInvoiceApi.generate(invoice, info, name);
-                          // if(pdfFile == "success"){
-                          //   ElegantNotification.success(
-                          //     description: const Text("Le fichier a été enregistré dans le dossier \"Document\""),
-                          //     title: const Text("Success"),
-                          //     notificationPosition: NOTIFICATION_POSITION.top,
-                          //     width: MediaQuery.of(context).size.width * 0.2,
-                          //   ).show(context);
-                          // }else{
-                          //   ElegantNotification.error(
-                          //     description: const Text("Nous avons rencontré un problème durant l'opération"),
-                          //     title: const Text("erreur"),
-                          //     notificationPosition: NOTIFICATION_POSITION.top,
-                          //     width: MediaQuery.of(context).size.width * 0.2,
-                          //   ).show(context);
-                          // }
-                        },
-                        child: Row(
-                          children: const [
-                            Icon(Icons.print, color: Colors.white, size: 16,),
-                            SizedBox(width: 2,),
-                            Text(
-                              "Exporter",
-                              style: TextStyle(
-                                fontFamily: 'PopBold',
-                                color: Colors.white,
-                              ),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 15, right: 15, top: 20),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                titleMenu(),
+                Row(
+                  children: [
+                    ElevatedButton(
+                      onPressed: () async{
+                        // //if (!await launch("http://localhost:8080/api/v1/visite/downloadpdf")) throw 'Could not launch fgggf';
+                        // Map<String, dynamic> m = {
+                        //   'number': DateTime.now().day.toString() + DateTime.now().second.toString() + DateTime.now().hour.toString() + "9999",
+                        //   'date': (DateTime.now().day.toString().length == 1 ? "0" + DateTime.now().day.toString() : DateTime.now().day.toString()) + "/" + (DateTime.now().month.toString().length == 1 ? "0" + DateTime.now().month.toString() : DateTime.now().month.toString()) + "/" + DateTime.now().year.toString(),
+                        // };
+                        // String name = "fiche" + DateTime.now().day.toString() + DateTime.now().second.toString() + DateTime.now().hour.toString() + "9999";
+                        // final info = m;
+                        // final invoice = visitOfDays;
+                        // String pdfFile = await PdfInvoiceApi.generate(invoice, info, name);
+                        // if(pdfFile == "success"){
+                        //   ElegantNotification.success(
+                        //     description: const Text("Le fichier a été enregistré dans le dossier \"Document\""),
+                        //     title: const Text("Success"),
+                        //     notificationPosition: NOTIFICATION_POSITION.top,
+                        //     width: MediaQuery.of(context).size.width * 0.2,
+                        //   ).show(context);
+                        // }else{
+                        //   ElegantNotification.error(
+                        //     description: const Text("Nous avons rencontré un problème durant l'opération"),
+                        //     title: const Text("erreur"),
+                        //     notificationPosition: NOTIFICATION_POSITION.top,
+                        //     width: MediaQuery.of(context).size.width * 0.2,
+                        //   ).show(context);
+                        // }
+                      },
+                      child: Row(
+                        children: const [
+                          Icon(Icons.print, color: Colors.white, size: 16,),
+                          SizedBox(width: 2,),
+                          Text(
+                            "Exporter",
+                            style: TextStyle(
+                              fontFamily: 'PopBold',
+                              color: Colors.white,
                             ),
-                          ],
-                        ),
-                        style: ButtonStyle(
-                            enableFeedback: false,
-                            backgroundColor: MaterialStateProperty.resolveWith((states) => secondcolor),
-                            padding: MaterialStateProperty.all(const EdgeInsets.only(left: 10, right: 10, top: 5, bottom: 5)),
-                            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                                RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(5.0),
-                                  // side: BorderSide(color: Colors.red)
-                                )
-                            )
-                        ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(width: 5,),
-                      ElevatedButton(
-                        onPressed: () async{
-                          // ElegantNotification.success(
-                          //     description: const Text("description"),
-                          //   title: const Text("Success"),
-                          //   notificationPosition: NOTIFICATION_POSITION.top,
-                          //   width: MediaQuery.of(context).size.width * 0.2,
-                          // ).show(context);
-                        },
-                        child: Row(
-                          children: const [
-                            Icon(Icons.refresh, color: Colors.white, size: 16,),
-                          ],
-                        ),
-                        style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.resolveWith((states) => secondcolor),
-                            padding: MaterialStateProperty.all(const EdgeInsets.only(left: 5, right: 5, top: 5, bottom: 5)),
-                            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                                RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(5.0),
-                                  // side: BorderSide(color: Colors.red)
-                                )
-                            )
-                        ),
-                      )
-                    ],
-                  )
-                ],
-              ),
+                      style: ButtonStyle(
+                          enableFeedback: false,
+                          backgroundColor: MaterialStateProperty.resolveWith((states) => secondcolor),
+                          padding: MaterialStateProperty.all(const EdgeInsets.only(left: 10, right: 10, top: 5, bottom: 5)),
+                          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(5.0),
+                                // side: BorderSide(color: Colors.red)
+                              )
+                          )
+                      ),
+                    ),
+                    const SizedBox(width: 5,),
+                    ElevatedButton(
+                      onPressed: () async{
+                        // ElegantNotification.success(
+                        //     description: const Text("description"),
+                        //   title: const Text("Success"),
+                        //   notificationPosition: NOTIFICATION_POSITION.top,
+                        //   width: MediaQuery.of(context).size.width * 0.2,
+                        // ).show(context);
+                      },
+                      child: Row(
+                        children: const [
+                          Icon(Icons.refresh, color: Colors.white, size: 16,),
+                        ],
+                      ),
+                      style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.resolveWith((states) => secondcolor),
+                          padding: MaterialStateProperty.all(const EdgeInsets.only(left: 5, right: 5, top: 5, bottom: 5)),
+                          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(5.0),
+                                // side: BorderSide(color: Colors.red)
+                              )
+                          )
+                      ),
+                    )
+                  ],
+                )
+              ],
             ),
-            const SizedBox(height: 20,),
-            Padding(
-              padding: const EdgeInsets.only(left: 15, right: 15, top: 20),
-              child: titleMenu(),
-            ),
-            Container(
-              height: MediaQuery.of(context).size.height * 0.8,
-              padding: const EdgeInsets.only(left: 15, right: 15, top: 20),
-              // decoration: const BoxDecoration(
-              //   color: Colors.white,
-              //   borderRadius: BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10))
-              // ),
+          ),
+          const SizedBox(height: 20,),
+          Expanded(
+            child: Container(
+              padding: const EdgeInsets.only(left: 15, right: 15, bottom: 10),
               child: HorizontalDataTable(
                 leftHandSideColumnWidth: MediaQuery.of(context).size.width * 0.15,
                 rightHandSideColumnWidth: MediaQuery.of(context).size.width * 0.75,
@@ -185,11 +169,12 @@ class _TraficPageState extends State<TraficPage> {
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
+
   searchWidget(){
     return Container(
       decoration: const BoxDecoration(
@@ -382,7 +367,7 @@ class _TraficPageState extends State<TraficPage> {
             const SizedBox(width: 10,),
             filterWidget(),
             const SizedBox(width: 10,),
-            //selectDateWidget()
+            selectDateWidget()
           ],
         ),
         //newVisitWidget()
@@ -463,6 +448,51 @@ class _TraficPageState extends State<TraficPage> {
         scrollbarThickness: 6,
         scrollbarAlwaysShow: true,
         offset: const Offset(-20, 0),
+      ),
+    );
+  }
+  selectDateWidget(){
+    return Container(
+      decoration: const BoxDecoration(
+        color: color3,
+        borderRadius: BorderRadius.all(Radius.circular(25)),
+      ),
+      padding: const EdgeInsets.only(left: 5, right: 5, bottom: 7),
+      height: 30,
+      width: 200,
+      child: DateTimePicker(
+        type: DateTimePickerType.date,
+        dateMask: 'd MMM, yyyy',
+        initialValue: DateTime.now().toString(),
+        firstDate: DateTime(2000),
+        lastDate: DateTime(2100),
+        decoration: const InputDecoration(
+            border: InputBorder.none,
+            prefix: Icon(Icons.event, size: 15, color: secondcolor,),
+            suffix: Icon(Icons.keyboard_arrow_down, size: 15, color: secondcolor,)
+        ),
+        style: const TextStyle(
+            color: secondcolor,
+            fontFamily: 'PopRegular',
+            fontSize: 14
+        ),
+        textAlign: TextAlign.center,
+        textAlignVertical: TextAlignVertical.top,
+        icon: const Icon(Icons.event, color: secondcolor,),
+        selectableDayPredicate: (date) {
+          // Disable weekend days to select from the calendar
+          if (date.weekday == 6 || date.weekday == 7) {
+            return false;
+          }
+
+          return true;
+        },
+        onChanged: (val) => print(val),
+        validator: (val) {
+          print(val);
+          return null;
+        },
+        onSaved: (val) => print(val),
       ),
     );
   }

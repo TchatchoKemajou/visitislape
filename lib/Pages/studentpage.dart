@@ -4,9 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:horizontal_data_table/horizontal_data_table.dart';
 import 'package:provider/provider.dart';
-import 'package:visitislape/Providers/studentprovider.dart';
-
-import '../Providers/visitorprovider.dart';
+import 'package:visitislape/Providers/personprovider.dart';
 import '../constantes.dart';
 
 class StudentPage extends StatefulWidget {
@@ -30,8 +28,8 @@ class _StudentPageState extends State<StudentPage> {
   List<dynamic> studentListSearch = [];
 
   getAllStudents() async{
-    final studentprovider = Provider.of<StudentProvider>(context);
-    final e = await studentprovider.findAllStudent();
+    final personProvider = Provider.of<PersonProvider>(context);
+    final e = await personProvider.findAllStudent();
     setState(() {
       studentList = e;
     });
@@ -95,7 +93,7 @@ class _StudentPageState extends State<StudentPage> {
                     const SizedBox(width: 5,),
                     ElevatedButton(
                       onPressed: () {
-                        //getAllVisitor();
+                        getAllStudents();
                       },
                       child: const Icon(Icons.refresh, color: Colors.white, size: 16,),
                       style: ButtonStyle(
@@ -162,8 +160,8 @@ class _StudentPageState extends State<StudentPage> {
     return [
       _getTitleItemWidget("Matricule", MediaQuery.of(context).size.width * 0.15),
       _getTitleItemWidget("Nom", MediaQuery.of(context).size.width * 0.15),
+      _getTitleItemWidget("Prénom", MediaQuery.of(context).size.width * 0.15),
       _getTitleItemWidget('Spcialité', MediaQuery.of(context).size.width * 0.15),
-      _getTitleItemWidget("Niveau", MediaQuery.of(context).size.width * 0.15),
       _getTitleItemWidget('Actions', MediaQuery.of(context).size.width * 0.05),
     ];
   }
@@ -180,7 +178,7 @@ class _StudentPageState extends State<StudentPage> {
     final student = isSearch == true ? studentListSearch[index] : studentList[index];
     return Container(
       child: Text(
-        student['etuMatricule'] != null ? student['etuMatricule'].toString() : "",
+        student['matricule'] ?? "",
         style: const TextStyle(
           fontFamily: 'PopBold',
           color: thirdcolor,
@@ -198,7 +196,7 @@ class _StudentPageState extends State<StudentPage> {
       children: <Widget>[
         Container(
           child: Text(
-            student['etuFullName'] ?? "",
+            student['firstName'] ?? "",
             style: const TextStyle(
               fontFamily: 'PopRegular',
               color: color2,
@@ -211,7 +209,7 @@ class _StudentPageState extends State<StudentPage> {
         ),
         Container(
           child: Text(
-            student['specialite'] ?? "Aucun",
+            student['lastName'] ?? "Aucun",
             style: const TextStyle(
               fontFamily: 'PopRegular',
               color: color2,
@@ -224,7 +222,7 @@ class _StudentPageState extends State<StudentPage> {
         ),
         Container(
           child: Text(
-            student['niveau'] ?? "Aucun",
+            student['domaine'] ?? "Aucun",
             style: const TextStyle(
               fontFamily: 'PopRegular',
               color: color2,
@@ -238,10 +236,10 @@ class _StudentPageState extends State<StudentPage> {
         Container(
           child: ElevatedButton(
             onPressed: () async{
-              final studentprovider = Provider.of<StudentProvider>(context, listen: false);
-              studentprovider.changeStudentId = student['etuID'];
-              await studentprovider.updateStudentCard();
-              if(studentprovider.requestMessage == "success"){
+              final personProvider = Provider.of<PersonProvider>(context, listen: false);
+              personProvider.changePersonId = student['personId'];
+              await personProvider.updateCard();
+              if(personProvider.requestMessage == "success"){
                 ElegantNotification.success(
                   description: const Text("opération effectuée avec success"),
                   title: const Text("Success"),
@@ -258,14 +256,14 @@ class _StudentPageState extends State<StudentPage> {
               }
             },
             child: Text(
-              student['etatCarte'] == true ? "Activer" : "Désactiver",
+              student['statusCard'] == true ? "Activer" : "Désactiver",
               style: const TextStyle(
                 fontFamily: 'PopBold',
                 color: Colors.white,
               ),
             ),
             style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.resolveWith((states) => student['etatCarte'] == true ? secondcolor : thirdcolor),
+                backgroundColor: MaterialStateProperty.resolveWith((states) => student['statusCard'] == true ? secondcolor : thirdcolor),
                 padding: MaterialStateProperty.all(const EdgeInsets.only(left: 10, right: 10, top: 5, bottom: 5)),
                 shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                     RoundedRectangleBorder(
@@ -294,7 +292,7 @@ class _StudentPageState extends State<StudentPage> {
     });
     setState(() {
       studentListSearch = studentList.where((element) {
-        return element['visitorFullName'].toLowerCase().contains(query.toLowerCase()) || element['vistorLastName'].toLowerCase().contains(query.toLowerCase()) || element['visitorCardId'].toLowerCase().contains(query.toLowerCase());
+        return element['matricule'].toLowerCase().contains(query.toLowerCase()) || element['firstName'].toLowerCase().contains(query.toLowerCase()) || element['lastName'].toLowerCase().contains(query.toLowerCase()) || element['domaine'].toLowerCase().contains(query.toLowerCase());
       }).toList();
     });
   }
@@ -307,7 +305,7 @@ class _StudentPageState extends State<StudentPage> {
     );
   }
   addNewStudentWidget(){
-    final studentprovider = Provider.of<StudentProvider>(context, listen: false);
+    final personProvider = Provider.of<PersonProvider>(context, listen: false);
     return Container(
       height: MediaQuery.of(context).size.height * 0.6,
       width: MediaQuery.of(context).size.width * 0.2,
@@ -324,7 +322,7 @@ class _StudentPageState extends State<StudentPage> {
             height: 50,
             child: const Center(
               child: Text(
-                "Ajouter un etudiant",
+                "Ajouter un étudiant",
                 style: TextStyle(
                     color: Colors.white,
                     fontFamily: 'PopBold',
@@ -344,7 +342,7 @@ class _StudentPageState extends State<StudentPage> {
                     keyboardType: TextInputType.text,
                     validator: (e) => e!.isEmpty ? " ce champ est obligatoire":null,
                     onChanged: (e){
-                      studentprovider.changeStudentMat = e;
+                      personProvider.changeMatricule = e;
                     },
                     //controller: nameController,
                     maxLines: 1,
@@ -387,7 +385,7 @@ class _StudentPageState extends State<StudentPage> {
                   TextFormField(
                     keyboardType: TextInputType.text,
                     onChanged: (e){
-                      studentprovider.changeStudentCode = e;
+                      personProvider.changeCode = e;
                     },
                     validator: (e) => e!.isEmpty ? " ce champ est obligatoire":null,
                     //controller: prenomController,
@@ -432,7 +430,7 @@ class _StudentPageState extends State<StudentPage> {
                     keyboardType: TextInputType.text,
                     validator: (e) => e!.isEmpty ? " ce champ est obligatoire":null,
                     onChanged: (e){
-                      studentprovider.changeStudentFullName = e;
+                      personProvider.changeFirstName = e;
                     },
                     //controller: cardController,
                     maxLines: 1,
@@ -474,18 +472,18 @@ class _StudentPageState extends State<StudentPage> {
                   const SizedBox(height: 10,),
                   TextFormField(
                     keyboardType: TextInputType.text,
-                    validator: (e) => e!.isEmpty ? " ce champ est obligatoire":null,
+                    // validator: (e) => e!.isEmpty ? " ce champ est obligatoire":null,
                     onChanged: (e){
-                      studentprovider.changeStudentSpecial = e;
+                      personProvider.changeLastName = e;
                     },
-                    //controller: phoneController,
+                    //controller: cardController,
                     maxLines: 1,
                     style: const TextStyle(
                         color: secondcolor
                     ),
                     decoration: const InputDecoration(
                       hoverColor: Colors.white,
-                      hintText: 'Spécialité',
+                      hintText: "Prénom",
                       hintStyle: TextStyle(
                           color: secondcolor,
                           fontFamily: 'PopRegular',
@@ -520,16 +518,16 @@ class _StudentPageState extends State<StudentPage> {
                     keyboardType: TextInputType.text,
                     validator: (e) => e!.isEmpty ? " ce champ est obligatoire":null,
                     onChanged: (e){
-                      studentprovider.changeStudentNiveau = e;
+                      personProvider.changeDomaine = e;
                     },
-                    //controller: phoneController,
+                    //controller: cardController,
                     maxLines: 1,
                     style: const TextStyle(
                         color: secondcolor
                     ),
                     decoration: const InputDecoration(
                       hoverColor: Colors.white,
-                      hintText: 'Niveau',
+                      hintText: "Spécialité",
                       hintStyle: TextStyle(
                           color: secondcolor,
                           fontFamily: 'PopRegular',
@@ -563,11 +561,15 @@ class _StudentPageState extends State<StudentPage> {
                   ElevatedButton(
                     onPressed: () async{
                       if(key.currentState!.validate()){
-                        await studentprovider.saveStudent();
-                        if(studentprovider.requestMessage == "success"){
+                        personProvider.changePersonType = "student";
+                        await personProvider.savePerson();
+                        if(personProvider.requestMessage == "success"){
                           SmartDialog.dismiss();
+                          setState(() {
+                            getAllStudents();
+                          });
                           ElegantNotification.success(
-                            description: const Text("Etudiant enregistré avec succès"),
+                            description: const Text("Employée enregistré avec succès"),
                             title: const Text("Success"),
                             notificationPosition: NOTIFICATION_POSITION.top,
                             width: MediaQuery.of(context).size.width * 0.2,

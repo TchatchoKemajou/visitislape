@@ -54,93 +54,93 @@ class _VisitorPageState extends State<VisitorPage> {
   Widget build(BuildContext context) {
     getAllVisitor();
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 15, right: 15, top: 20),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    "Liste des visiteurs",
-                    style: TextStyle(
-                        fontFamily: 'PopBold',
-                        color: Colors.black,
-                        fontSize: 20
-                    ),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 15, right: 15, top: 20),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  "Liste des visiteurs",
+                  style: TextStyle(
+                      fontFamily: 'PopBold',
+                      color: Colors.black,
+                      fontSize: 20
                   ),
-                  Row(
-                    children: [
-                      ElevatedButton(
-                        onPressed: () {
-                          SmartDialog.show(
-                            isLoadingTemp: false,
-                            alignmentTemp: Alignment.center,
-                            maskColorTemp: Colors.transparent,
-                            keepSingle: false,
-                            widget: addNewVisitorWidget(),
-                          );
-                        },
-                        child: Row(
-                          children: const [
-                            Icon(Icons.add, color: Colors.white, size: 16,),
-                            SizedBox(width: 2,),
-                            Text(
-                              "Nouveau visiteur",
-                              style: TextStyle(
-                                fontFamily: 'PopBold',
-                                color: Colors.white,
-                              ),
+                ),
+                Row(
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        SmartDialog.show(
+                          isLoadingTemp: false,
+                          alignmentTemp: Alignment.center,
+                          maskColorTemp: Colors.transparent,
+                          keepSingle: false,
+                          widget: addNewVisitorWidget(),
+                        );
+                      },
+                      child: Row(
+                        children: const [
+                          Icon(Icons.add, color: Colors.white, size: 16,),
+                          SizedBox(width: 2,),
+                          Text(
+                            "Nouveau visiteur",
+                            style: TextStyle(
+                              fontFamily: 'PopBold',
+                              color: Colors.white,
                             ),
-                          ],
-                        ),
-                        style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.resolveWith((states) => secondcolor),
-                            padding: MaterialStateProperty.all(const EdgeInsets.only(left: 10, right: 10, top: 5, bottom: 5)),
-                            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                                RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(5.0),
-                                  // side: BorderSide(color: Colors.red)
-                                )
-                            )
-                        ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(width: 5,),
-                      ElevatedButton(
-                        onPressed: () async{
-                         await getAllVisitor();
-                        },
-                        child: Row(
-                          children: const [
-                            Icon(Icons.refresh, color: Colors.white, size: 16,),
-                          ],
-                        ),
-                        style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.resolveWith((states) => secondcolor),
-                            padding: MaterialStateProperty.all(const EdgeInsets.only(left: 5, right: 5, top: 5, bottom: 5)),
-                            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                                RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(5.0),
-                                  // side: BorderSide(color: Colors.red)
-                                )
-                            )
-                        ),
-                      )
-                    ],
-                  )
-                ],
-              ),
+                      style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.resolveWith((states) => secondcolor),
+                          padding: MaterialStateProperty.all(const EdgeInsets.only(left: 10, right: 10, top: 5, bottom: 5)),
+                          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(5.0),
+                                // side: BorderSide(color: Colors.red)
+                              )
+                          )
+                      ),
+                    ),
+                    const SizedBox(width: 5,),
+                    ElevatedButton(
+                      onPressed: () async{
+                       await getAllVisitor();
+                      },
+                      child: Row(
+                        children: const [
+                          Icon(Icons.refresh, color: Colors.white, size: 16,),
+                        ],
+                      ),
+                      style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.resolveWith((states) => secondcolor),
+                          padding: MaterialStateProperty.all(const EdgeInsets.only(left: 5, right: 5, top: 5, bottom: 5)),
+                          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(5.0),
+                                // side: BorderSide(color: Colors.red)
+                              )
+                          )
+                      ),
+                    )
+                  ],
+                )
+              ],
             ),
-            const SizedBox(height: 20,),
-            Padding(
-              padding: const EdgeInsets.only(left: 15, right: 15, top: 20),
-              child: titleMenu(),
-            ),
-            const SizedBox(height: 20,),
-            Container(
-              height: MediaQuery.of(context).size.height * 0.8,
-              padding: const EdgeInsets.only(left: 15, right: 15, top: 20),
+          ),
+          const SizedBox(height: 20,),
+          Padding(
+            padding: const EdgeInsets.only(left: 15, right: 15, top: 20),
+            child: titleMenu(),
+          ),
+          const SizedBox(height: 20,),
+          Expanded(
+            child: Container(
+             // height: MediaQuery.of(context).size.height * 0.8,
+              padding: const EdgeInsets.only(left: 15, right: 15, bottom: 10),
               child: HorizontalDataTable(
                 leftHandSideColumnWidth: MediaQuery.of(context).size.width * 0.15,
                 rightHandSideColumnWidth: MediaQuery.of(context).size.width * 0.75,
@@ -170,8 +170,8 @@ class _VisitorPageState extends State<VisitorPage> {
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

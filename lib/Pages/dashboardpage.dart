@@ -1,7 +1,14 @@
+import 'dart:async';
+
 import 'package:animated_segmented_tab_control/animated_segmented_tab_control.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:visitislape/Pages/employepage.dart';
 import 'package:visitislape/Pages/studentpage.dart';
+import '../API/securityapi.dart';
+import '../Providers/personprovider.dart';
+import '../Providers/traficprovider.dart';
+import '../Providers/visitorprovider.dart';
 import '../constantes.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 class DashboardPage extends StatefulWidget {
@@ -11,8 +18,32 @@ class DashboardPage extends StatefulWidget {
 }
 
 class _DashboardPageState extends State<DashboardPage> {
+  SecurityApi securityApi = SecurityApi();
+  int? visitorNumber;
+  int? employeeNumber;
+  int? studentNumber;
+  int? traficNumber;
+
+  getTotal() async{
+    final visitorprovider = Provider.of<VisitorProvider>(context, listen: false);
+    final personProvider = Provider.of<PersonProvider>(context, listen: false);
+    final traficProvider = Provider.of<TraficProvider>(context, listen: false);
+    final v = await visitorprovider.findAllVisitor();
+    final site = await securityApi.getSite();
+    final t = await traficProvider.findAllTrafic(site);
+    final e = await personProvider.findAllEmployees();
+    final s = await personProvider.findAllStudent();
+    setState(() {
+      visitorNumber = v.length;
+      studentNumber = s.length;
+      employeeNumber = e.length;
+      traficNumber = t.length;
+    });
+    print(visitorNumber);
+  }
   @override
   Widget build(BuildContext context) {
+    getTotal();
     return Scaffold(
       backgroundColor: Colors.white,
       body: Column(
@@ -103,7 +134,7 @@ class _DashboardPageState extends State<DashboardPage> {
           Expanded(
             child: Container(
               height: MediaQuery.of(context).size.height * 0.7,
-              padding: const EdgeInsets.only(left: 15, right: 15),
+              //padding: const EdgeInsets.only(left: 15, right: 15),
               child: DefaultTabController(
                 length: 3,
                 child: SafeArea(
@@ -163,6 +194,9 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   dashMenu(){
+    // Timer.periodic(const Duration(seconds: 5), (timer){
+    //   getTotal();
+    // });
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
@@ -195,11 +229,11 @@ class _DashboardPageState extends State<DashboardPage> {
                         color: Colors.grey
                       ),
                     ),
-                    subtitle: const Padding(
-                      padding: EdgeInsets.only(top: 5, bottom: 10),
+                    subtitle: Padding(
+                      padding: const EdgeInsets.only(top: 5, bottom: 10),
                       child: Text(
-                        "405585",
-                        style: TextStyle(
+                        visitorNumber != null ? visitorNumber.toString() : "0",
+                        style: const TextStyle(
                           fontFamily: 'PopBold',
                           fontSize: 18,
                           color: Colors.black
@@ -261,18 +295,18 @@ class _DashboardPageState extends State<DashboardPage> {
                       ),
                     ),
                     title: const Text(
-                      "Total visiteurs",
+                      "Total étudiant",
                       style: TextStyle(
                           fontFamily: 'PopRegular',
                           fontSize: 13,
                           color: Colors.grey
                       ),
                     ),
-                    subtitle: const Padding(
-                      padding: EdgeInsets.only(top: 5, bottom: 10),
+                    subtitle: Padding(
+                      padding: const EdgeInsets.only(top: 5, bottom: 10),
                       child: Text(
-                        "405585",
-                        style: TextStyle(
+                        studentNumber != null ? studentNumber.toString() : "0",
+                        style: const TextStyle(
                             fontFamily: 'PopBold',
                             fontSize: 18,
                             color: Colors.black
@@ -334,18 +368,18 @@ class _DashboardPageState extends State<DashboardPage> {
                       ),
                     ),
                     title: const Text(
-                      "Total visiteurs",
+                      "Total employée",
                       style: TextStyle(
                           fontFamily: 'PopRegular',
                           fontSize: 13,
                           color: Colors.grey
                       ),
                     ),
-                    subtitle: const Padding(
-                      padding: EdgeInsets.only(top: 5, bottom: 10),
+                    subtitle: Padding(
+                      padding: const EdgeInsets.only(top: 5, bottom: 10),
                       child: Text(
-                        "405585",
-                        style: TextStyle(
+                        employeeNumber != null ? employeeNumber.toString() : "0",
+                        style: const TextStyle(
                             fontFamily: 'PopBold',
                             fontSize: 18,
                             color: Colors.black
@@ -407,18 +441,18 @@ class _DashboardPageState extends State<DashboardPage> {
                       ),
                     ),
                     title: const Text(
-                      "Total visiteurs",
+                      "Total trafic",
                       style: TextStyle(
                           fontFamily: 'PopRegular',
                           fontSize: 13,
                           color: Colors.grey
                       ),
                     ),
-                    subtitle: const Padding(
-                      padding: EdgeInsets.only(top: 5, bottom: 10),
+                    subtitle:  Padding(
+                      padding: const EdgeInsets.only(top: 5, bottom: 10),
                       child: Text(
-                        "405585",
-                        style: TextStyle(
+                        traficNumber != null ? traficNumber.toString() : "0",
+                        style: const TextStyle(
                             fontFamily: 'PopBold',
                             fontSize: 18,
                             color: Colors.black
